@@ -127,3 +127,61 @@ export function loadEnv(): ViteEnv {
 
   return ret;
 }
+
+export function getEnvConfig(match = 'VITE_GLOB_', confFiles = ['.env', '.env.production']) {
+  let envConfig = {};
+  confFiles.forEach((item) => {
+    try {
+      const env = dotenv.parse(fs.readFileSync(path.resolve(process.cwd(), item)));
+
+      envConfig = { ...envConfig, ...env };
+    } catch (error) {}
+  });
+  Object.keys(envConfig).forEach((key) => {
+    const reg = new RegExp(`^(${match})`);
+    if (!reg.test(key)) {
+      Reflect.deleteProperty(envConfig, key);
+    }
+  });
+  return envConfig;
+}
+
+function consoleFn(color: string, message: any) {
+  console.log(
+    chalk.blue.bold('****************  ') +
+      (chalk as any)[color].bold(message) +
+      chalk.blue.bold('  ****************')
+  );
+}
+
+/**
+ * warnConsole
+ * @param message
+ */
+export function successConsole(message: any) {
+  consoleFn('green', '✨ ' + message);
+}
+
+/**
+ * warnConsole
+ * @param message
+ */
+export function errorConsole(message: any) {
+  consoleFn('red', '✨ ' + message);
+}
+
+/**
+ * warnConsole
+ * @param message message
+ */
+export function warnConsole(message: any) {
+  consoleFn('yellow', '✨ ' + message);
+}
+
+/**
+ * Get user root directory
+ * @param dir file path
+ */
+export function getCwdPath(...dir: string[]) {
+  return path.resolve(process.cwd(), ...dir);
+}
