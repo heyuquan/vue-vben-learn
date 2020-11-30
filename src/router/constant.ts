@@ -5,4 +5,4 @@ import type { AppRouteRecordRaw } from '/@/router/types';
 /**
  * @description: default layout
  */
-export const DEFAULT_LAYOUT_COMPONENT = () => import('/@/layouts/default/index');
+export const DEFAULT_LAYOUT_COMPONENT = () => import('../layouts/default/default/index');

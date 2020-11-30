@@ -31,6 +31,20 @@ const app = createApp(App);
 // // Configure global error handling
 // setupErrorHandle(app);
 
+// Mount when the route is ready
 router.isReady().then(() => {
   app.mount('#app');
 });
+
+if (isDevMode()) {
+  app.config.performance = true;
+  window.__APP__ = app;
+}
+
+// // If you do not need to use the mock service in the production environment, you can comment the code
+// if (isProdMode() && isUseMock()) {
+//   setupProdMockServer();
+// }
+
+// // Used to share app instances in other modules
+// setApp(app);
