@@ -9,8 +9,8 @@
   import moment from 'moment';
   import 'moment/dist/locale/zh-cn';
 
-  // import { getConfigProvider, initAppConfigStore } from '/@/setup/App';
-  // import { useLockPage } from '/@/hooks/web/useLockPage';
+  import { getConfigProvider, initAppConfigStore } from '/@/setup/App';
+  import { useLockPage } from '/@/hooks/web/useLockPage';
 
   moment.locale('zh-cn');
 
