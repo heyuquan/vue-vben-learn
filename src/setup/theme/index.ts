@@ -55,5 +55,32 @@ export function updateHeaderBgColor(color: string) {
   // Determine the depth of the color value and automatically switch the theme
   const isDark = colorIsDark(color);
 
-  appStore;
+  appStore.commitProjectConfigState({
+    headerSetting: {
+      theme: isDark ? ThemeEnum.DARK : ThemeEnum.LIGHT,
+    },
+  });
+}
+
+/**
+ * Change the background color of the left menu
+ * @param color  bg color
+ */
+export function updateSidebarBgColor(color: string) {
+  if (!isHexColor(color)) return;
+
+  setCssVar(SIDER_DARK_BG_COLOR, color);
+  setCssVar(SIDER_DARK_DARKEN_BG_COLOR, darken(color, 6));
+  setCssVar(SIDER_LIGHTEN_1_BG_COLOR, lighten(color, 4));
+  setCssVar(SIDER_LIGHTEN_2_BG_COLOR, lighten(color, 8));
+
+  // only #ffffff is light
+  // Only when the background color is #fff, the theme of the menu will be changed to light
+  const isLight = ['#fff', '#ffffff'].includes(color.toLowerCase());
+
+  appStore.commitProjectConfigState({
+    menuSetting: {
+      theme: isLight ? ThemeEnum.LIGHT : ThemeEnum.DARK,
+    },
+  });
 }
