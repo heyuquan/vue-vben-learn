@@ -98,6 +98,7 @@ class User extends VuexModule {
             appStore.commitPageLoadingState(false);
           }, 30);
         }));
+      return userInfo;
     } catch (error) {
       return null;
     }
