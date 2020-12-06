@@ -1,11 +1,11 @@
-import type { RouteRecordRaw } from 'vue-rourer';
+import type { RouteRecordRaw } from 'vue-router';
 import type { App } from 'vue';
 
 import { createRouter, createWebHashHistory } from 'vue-router';
 
 import { scrollWaiter } from './scrollWaiter';
 
-//import { createGuard } from './guard';
+import { createGuard } from './guard/';
 
 import { basicRoutes } from './routes/';
 
@@ -44,6 +44,7 @@ export function resetRouter() {
 // config router
 export function setupRouter(app: App<Element>) {
   app.use(router);
+  createGuard(router);
 }
 
 export default router;
