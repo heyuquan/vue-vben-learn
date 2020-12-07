@@ -8,7 +8,6 @@ import { cloneDeep } from 'lodash-es';
 import type { RequestOptions, CreateAxiosOptions, Result, UploadFileParams } from './types';
 import { errorResult } from './const';
 import { ContentTypeEnum } from '/@/enums/httpEnum';
-import { AxiosTransform } from './axiosTransform';
 
 export * from './axiosTransform';
 
