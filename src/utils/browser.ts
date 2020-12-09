@@ -9,7 +9,6 @@ function getTypeVersion() {
     Opera: /opera.([\d.]+)/,
     Safari: /(?:safari|version).([\d.]+)/,
   };
-
   type BrowserKeys = keyof typeof browserTypes;
 
   /** browser type */

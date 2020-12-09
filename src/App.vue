@@ -1,42 +1,47 @@
 <template>
-  <ConfigProvider v-bind="lockEvent" :locale="zhCN" :transform-cell-text="transformCellText"></ConfigProvider>
+  <ConfigProvider
+    v-bind="lockEvent"
+    :locale="antConfigLocale"
+    :transform-cell-text="transformCellText"
+  >
+    <AppProvider>
+      <router-view />
+    </AppProvider>
+  </ConfigProvider>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { ConfigProvider } from "ant-design-vue";
-import { createBreakpointListen } from "/@/hooks/event/useBreakpoint";
+  import { defineComponent } from 'vue';
+  import { ConfigProvider } from 'ant-design-vue';
 
-import zhCN from "ant-design-vue/es/locale/zh_cn";
-import moment from "moment";
-import "moment/dist/locale/zh-cn";
+  import { getConfigProvider, initAppConfigStore } from '/@/setup/App';
 
-import { getConfigProvider, initAppConfigStore } from "/@/setup/App";
-import { useLockPage } from "/@/hooks/web/useLockPage";
+  import { useLockPage } from '/@/hooks/web/useLockPage';
+  import { useLocale } from '/@/hooks/web/useLocale';
 
-moment.locale("zh-cn");
+  import { AppProvider } from '/@/components/Application';
 
-export default defineComponent({
-  name: "App",
-  components: { ConfigProvider },
-  setup() {
-    // initialize vuex internal system configuration
-    initAppConfigStore();
+  export default defineComponent({
+    name: 'App',
+    components: { ConfigProvider, AppProvider },
+    setup() {
+      // Initialize vuex internal system configuration
+      initAppConfigStore();
 
-    // create a global breakpoint monitor
-    createBreakpointListen();
+      // Get ConfigProvider configuration
+      const { transformCellText } = getConfigProvider();
 
-    // get ConfigProvider configuration
-    const { transformCellText } = getConfigProvider();
+      // Create a lock screen monitor
+      const lockEvent = useLockPage();
 
-    // create a lock screen monitor
-    const lockEvent = useLockPage();
+      // support Multi-language
+      const { antConfigLocale } = useLocale();
 
-    return {
-      transformCellText,
-      zhCN,
-      lockEvent,
-    };
-  },
-});
+      return {
+        transformCellText,
+        antConfigLocale,
+        lockEvent,
+      };
+    },
+  });
 </script>

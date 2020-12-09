@@ -1,8 +1,8 @@
 import type { AppRouteRecordRaw, Menu } from '/@/router/types';
-
 import store from '/@/store/index';
-import { VuexModule, Module, getModule, Mutation, Action } from 'vuex-module-decorators';
 import { hotModuleUnregisterModule } from '/@/utils/helper/vuexHelper';
+
+import { VuexModule, Mutation, Module, getModule, Action } from 'vuex-module-decorators';
 
 import { PermissionModeEnum } from '/@/enums/appEnum';
 
@@ -12,14 +12,16 @@ import { userStore } from '/@/store/modules/user';
 import { asyncRoutes } from '/@/router/routes';
 import { filter } from '/@/utils/helper/treeHelper';
 import { toRaw } from 'vue';
-
 import { getMenuListById } from '/@/api/sys/menu';
-import { genRouteModule, transformObjToRoute } from '/@/utils/helper/routeHelper';
-import { transformRouteToMenu } from '/@/utils/helper/menuHelper';
-import { REDIRECT_ROUTE } from '/@/router/constant';
-import { useMessage } from '/@/hooks/web/useMessage';
-const { createMessage } = useMessage();
 
+import { transformObjToRoute } from '/@/router/helper/routeHelper';
+import { transformRouteToMenu } from '/@/router/helper/menuHelper';
+
+import { useMessage } from '/@/hooks/web/useMessage';
+// import { warn } from '/@/utils/log';
+import { useI18n } from '/@/hooks/web/useI18n';
+
+const { createMessage } = useMessage();
 const NAME = 'permission';
 hotModuleUnregisterModule(NAME);
 @Module({ dynamic: true, namespaced: true, store, name: NAME })
@@ -81,7 +83,8 @@ class Permission extends VuexModule {
   }
 
   @Action
-  async buildRoutesAction(): Promise<AppRouteRecordRaw[]> {
+  async buildRoutesAction(id?: number | string): Promise<AppRouteRecordRaw[]> {
+    const { t } = useI18n();
     let routes: AppRouteRecordRaw[] = [];
     const roleList = toRaw(userStore.getRoleListState);
 
@@ -90,25 +93,19 @@ class Permission extends VuexModule {
     // role permissions
     if (permissionMode === PermissionModeEnum.ROLE) {
       routes = filter(asyncRoutes, (route) => {
-        const { meta } = route;
-        const { roles } = meta!;
+        const { meta } = route as AppRouteRecordRaw;
+        const { roles } = meta || {};
         if (!roles) return true;
         return roleList.some((role) => roles.includes(role));
       });
-      // this.commitRoutesState(routes);
-      // Background permissions
-      // warn(
-      //   `当前权限模式为:${PermissionModeEnum.ROLE},请将src/store/modules/permission.ts内的后台菜单获取函数注释,如果已注释可以忽略此信息!`
-      // );
+      //  如果确定不需要做后台动态权限,请将下面整个判断注释
     } else if (permissionMode === PermissionModeEnum.BACK) {
-      const messageKey = 'loadMenu';
       createMessage.loading({
-        content: '菜单加载中...',
-        key: messageKey,
+        content: t('sys.app.menuLoading'),
         duration: 1,
       });
       // 这里获取后台路由菜单逻辑自行修改
-      const paramId = userStore.getUserInfoState.userId;
+      const paramId = id || userStore.getUserInfoState.userId;
       if (!paramId) {
         throw new Error('paramId is undefined!');
       }
@@ -117,14 +114,12 @@ class Permission extends VuexModule {
       routeList = transformObjToRoute(routeList);
       //  后台路由转菜单结构
       const backMenuList = transformRouteToMenu(routeList);
-      this.commitBackMenuListState(backMenuList);
-      // 生成路由
-      routes = genRouteModule(routeList) as AppRouteRecordRaw[];
-      routes.push(REDIRECT_ROUTE);
-    }
 
+      this.commitBackMenuListState(backMenuList);
+
+      routes = routeList;
+    }
     return routes;
   }
 }
-export { Permission };
 export const permissionStore = getModule<Permission>(Permission);

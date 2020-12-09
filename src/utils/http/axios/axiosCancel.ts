@@ -1,4 +1,4 @@
-import { AxiosRequestConfig, Canceler } from 'axios';
+import type { AxiosRequestConfig, Canceler } from 'axios';
 import axios from 'axios';
 
 import { isFunction } from '/@/utils/is';

@@ -34,7 +34,6 @@ export const formatAgo = (str: string | number) => {
     return parseInt(String(time / 31536000000)) + '年前';
   }
 };
-
 /**
  * @description: 格式化请求参数时间
  */
@@ -59,4 +58,4 @@ export function formatRequestDate(params: any) {
   }
 }
 
-export const deteUtil = moment;
+export const dateUtil = moment;

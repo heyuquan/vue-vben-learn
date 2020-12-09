@@ -28,7 +28,6 @@ export interface Result<T = any> {
   message: string;
   result: T;
 }
-
 // multipart/form-data：上传文件
 export interface UploadFileParams {
   // 其他参数

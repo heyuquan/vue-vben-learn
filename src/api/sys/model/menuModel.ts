@@ -1,5 +1,4 @@
 import { RouteMeta } from '/@/router/types';
-
 export interface RouteItem {
   path: string;
   component: any;

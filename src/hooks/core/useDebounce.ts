@@ -7,7 +7,6 @@ export interface DebounceAndThrottleOptions {
   // 只执行一次
   once?: boolean;
 }
-
 export type CancelFn = () => void;
 
 export type DebounceAndThrottleProcedure<T extends unknown[]> = (...args: T) => unknown;

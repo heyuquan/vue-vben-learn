@@ -1,43 +1,42 @@
+import type { FunctionalComponent } from 'vue';
+
+import { defineComponent, unref } from 'vue';
+
 import {
   DoubleRightOutlined,
   DoubleLeftOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
 } from '@ant-design/icons-vue';
-import { defineComponent } from 'vue';
 
-// store
-import { menuStore } from '/@/store/modules/menu';
+import { useMenuSetting } from '/@/hooks/setting/useMenuSetting';
+import { propTypes } from '/@/utils/propTypes';
+
+const SiderTrigger: FunctionalComponent = () => {
+  const { getCollapsed } = useMenuSetting();
+  return unref(getCollapsed) ? <DoubleRightOutlined /> : <DoubleLeftOutlined />;
+};
+
+const HeaderTrigger: FunctionalComponent<{
+  theme?: string;
+}> = (props) => {
+  const { toggleCollapsed, getCollapsed } = useMenuSetting();
+  return (
+    <span class={['layout-trigger', props.theme]} onClick={toggleCollapsed}>
+      {unref(getCollapsed) ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+    </span>
+  );
+};
 
 export default defineComponent({
   name: 'LayoutTrigger',
   props: {
-    sider: {
-      type: Boolean,
-      default: true,
-    },
-    theme: {
-      type: String,
-    },
+    sider: propTypes.bool.def(true),
+    theme: propTypes.oneOf(['light', 'dark']),
   },
   setup(props) {
-    function toggleMenu() {
-      menuStore.commitCollapsedState(!menuStore.getCollapsedState);
-    }
-
     return () => {
-      const siderTrigger = menuStore.getCollapsedState ? (
-        <DoubleRightOutlined />
-      ) : (
-        <DoubleLeftOutlined />
-      );
-      if (props.sider) return siderTrigger;
-
-      return (
-        <span class={['layout-trigger', props.theme]} onClick={toggleMenu}>
-          {menuStore.getCollapsedState ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-        </span>
-      );
+      return props.sider ? <SiderTrigger /> : <HeaderTrigger theme={props.theme} />;
     };
   },
 });

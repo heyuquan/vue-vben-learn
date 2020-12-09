@@ -1,72 +1,71 @@
-import { computed, defineComponent, unref, Transition, KeepAlive, toRaw } from 'vue';
+import type { FunctionalComponent } from 'vue';
+
+import { computed, defineComponent, unref, Transition, KeepAlive } from 'vue';
 import { RouterView, RouteLocation } from 'vue-router';
 
-import { useTransition } from './useTransition';
+import FrameLayout from '/@/layouts/iframe/index.vue';
 
-import { tabStore } from '/@/store/modules/tab';
-import { appStore } from '/@/store/modules/app';
+import { useRootSetting } from '/@/hooks/setting/useRootSetting';
+
+import { useTransitionSetting } from '/@/hooks/setting/useTransitionSetting';
+import { useCache } from './useCache';
+import { useMultipleTabSetting } from '/@/hooks/setting/useMultipleTabSetting';
+
+interface DefaultContext {
+  Component: FunctionalComponent;
+  route: RouteLocation;
+}
 
 export default defineComponent({
   name: 'PageLayout',
   setup() {
-    const getProjectConfigRef = computed(() => appStore.getProjectConfig);
-    const openCacheRef = computed(() => {
-      const {
-        openKeepAlive,
-        multiTabsSetting: { show },
-      } = unref(getProjectConfigRef);
-      return openKeepAlive && show;
-    });
-    const getCacheTabsRef = computed(() => toRaw(tabStore.getKeepAliveTabsState) as string[]);
+    const { getCaches } = useCache(true);
+    const { getShowMultipleTab } = useMultipleTabSetting();
 
-    const { openPageLoading } = unref(getProjectConfigRef);
+    const { getOpenKeepAlive, getCanEmbedIFramePage } = useRootSetting();
 
-    let on = {};
-    if (openPageLoading) {
-      const { on: transitionOn } = useTransition();
-      on = transitionOn;
-    }
+    const { getBasicTransition, getEnableTransition } = useTransitionSetting();
+
+    const openCache = computed(() => unref(getOpenKeepAlive) && unref(getShowMultipleTab));
 
     return () => {
-      const {
-        routerTransition,
-        openRouterTransition,
-        multiTabsSetting: { max },
-      } = unref(getProjectConfigRef);
-
       return (
-        <div>
+        <>
           <RouterView>
             {{
-              default: ({ Component, route }: { Component: any; route: RouteLocation }) => {
+              default: ({ Component, route }: DefaultContext) => {
                 // No longer show animations that are already in the tab
-                const cacheTabs = unref(getCacheTabsRef);
+                const cacheTabs = unref(getCaches);
                 const isInCache = cacheTabs.includes(route.name as string);
-                const name = isInCache && route.meta.inTab ? 'fade' : null;
+                const name =
+                  isInCache && route.meta.loaded && unref(getEnableTransition)
+                    ? 'fade-slide'
+                    : null;
 
-                const Content = unref(openCacheRef) ? (
-                  <KeepAlive max={max} include={cacheTabs}>
-                    <Component key={route.fullPath} />
-                  </KeepAlive>
+                const renderComp = () => <Component key={route.fullPath} />;
+
+                const PageContent = unref(openCache) ? (
+                  <KeepAlive include={cacheTabs}>{renderComp()}</KeepAlive>
                 ) : (
-                  <Component key={route.fullPath} />
+                  renderComp()
                 );
-                return openRouterTransition ? (
+
+                return unref(getEnableTransition) ? (
                   <Transition
-                    {...on}
-                    name={name || route.meta.transitionName || routerTransition}
+                    name={name || route.meta.transitionName || unref(getBasicTransition)}
                     mode="out-in"
                     appear={true}
                   >
-                    {() => Content}
+                    {() => PageContent}
                   </Transition>
                 ) : (
-                  Content
+                  PageContent
                 );
               },
             }}
           </RouterView>
-        </div>
+          {unref(getCanEmbedIFramePage) && <FrameLayout />}
+        </>
       );
     };
   },

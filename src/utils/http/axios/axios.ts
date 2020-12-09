@@ -6,11 +6,15 @@ import { isFunction } from '/@/utils/is';
 import { cloneDeep } from 'lodash-es';
 
 import type { RequestOptions, CreateAxiosOptions, Result, UploadFileParams } from './types';
+// import { ContentTypeEnum } from '/@/enums/httpEnum';
 import { errorResult } from './const';
 import { ContentTypeEnum } from '/@/enums/httpEnum';
 
 export * from './axiosTransform';
 
+/**
+ * @description:  axios模块
+ */
 export class VAxios {
   private axiosInstance: AxiosInstance;
   private readonly options: CreateAxiosOptions;
@@ -18,6 +22,7 @@ export class VAxios {
   constructor(options: CreateAxiosOptions) {
     this.options = options;
     this.axiosInstance = axios.create(options);
+    this.setupInterceptors();
   }
 
   /**
@@ -137,6 +142,9 @@ export class VAxios {
     });
   }
 
+  /**
+   * @description:   请求方法
+   */
   request<T = any>(config: AxiosRequestConfig, options?: RequestOptions): Promise<T> {
     let conf: AxiosRequestConfig = cloneDeep(config);
     const transform = this.getTransform();

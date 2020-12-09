@@ -17,7 +17,6 @@ export type DebounceAndThrottleProcedureResult<T extends unknown[]> = [
 ];
 
 import { isFunction } from '/@/utils/is';
-
 export function throttle<T extends unknown[]>(
   handle: DebounceAndThrottleProcedure<T>,
   wait: number,
@@ -28,7 +27,6 @@ export function throttle<T extends unknown[]>(
   }
   let { immediate = false } = options;
   const { once = false, debounce = false } = options;
-
   let timeoutId: Nullable<TimeoutHandle>;
   // Has it been cancelled
   let cancelled: boolean | null = false;
@@ -50,7 +48,6 @@ export function throttle<T extends unknown[]>(
   function cancelExec(): void {
     once && cancel();
   }
-
   function fn(this: unknown, ...args: T) {
     // If it has been cancelled, it will not be executed
     if (cancelled) {
