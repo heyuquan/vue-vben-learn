@@ -15,3 +15,9 @@ import { appStore } from '/@/store/modules/app';
 import { useSearchInput } from './useSearchInput';
 import { useOpenKeys } from './useOpenKeys';
 import { useRouter } from 'vue-router';
+
+import { isFunction } from '/@/utils/is';
+import { getSlot } from '/@/utils/helper/tsxHelper';
+import { menuHasChildren } from './helper';
+
+import { getCurrentParentPath } from '/@/router/menus';
