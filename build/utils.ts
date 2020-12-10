@@ -3,6 +3,7 @@ import path from 'path';
 import { networkInterfaces } from 'os';
 import dotenv from 'dotenv';
 import chalk from 'chalk';
+// import execa from 'execa';
 
 export const isFunction = (arg: unknown): arg is (...args: any[]) => any =>
   typeof arg === 'function';
@@ -22,6 +23,7 @@ export function readAllFile(root: string, reg: RegExp) {
     if (fs.existsSync(root)) {
       const stat = fs.lstatSync(root);
       if (stat.isDirectory()) {
+        // dir
         const files = fs.readdirSync(root);
         files.forEach(function (file) {
           const t = readAllFile(root + '/' + file, reg);
@@ -31,9 +33,9 @@ export function readAllFile(root: string, reg: RegExp) {
         if (reg !== undefined) {
           if (isFunction(reg.test) && reg.test(root)) {
             resultArr.push(root);
-          } else {
-            resultArr.push(root);
           }
+        } else {
+          resultArr.push(root);
         }
       }
     }
@@ -42,7 +44,7 @@ export function readAllFile(root: string, reg: RegExp) {
   return resultArr;
 }
 
-/*
+/**
  * get client ip address
  */
 export function getIPAddress() {
@@ -100,14 +102,18 @@ export interface ViteEnv {
   VITE_USE_CDN: boolean;
   VITE_DROP_CONSOLE: boolean;
   VITE_BUILD_GZIP: boolean;
+  VITE_DYNAMIC_IMPORT: boolean;
 }
 
+// Read all environment variable configuration files to process.env
 export function loadEnv(): ViteEnv {
   const env = process.env.NODE_ENV;
   const ret: any = {};
-  const envList = [`.env.${env}.local`, `.env.${env}`, '.env.local', '.env'];
+  const envList = [`.env.${env}.local`, `.env.${env}`, '.env.local', '.env', ,];
   envList.forEach((e) => {
-    dotenv.config({ path: e });
+    dotenv.config({
+      path: e,
+    });
   });
 
   for (const envName of Object.keys(process.env)) {
@@ -124,10 +130,14 @@ export function loadEnv(): ViteEnv {
     ret[envName] = realName;
     process.env[envName] = realName;
   }
-
   return ret;
 }
 
+/**
+ * Get the environment variables starting with the specified prefix
+ * @param match prefix
+ * @param confFiles ext
+ */
 export function getEnvConfig(match = 'VITE_GLOB_', confFiles = ['.env', '.env.production']) {
   let envConfig = {};
   confFiles.forEach((item) => {
@@ -185,3 +195,6 @@ export function warnConsole(message: any) {
 export function getCwdPath(...dir: string[]) {
   return path.resolve(process.cwd(), ...dir);
 }
+
+// export const run = (bin: string, args: any, opts = {}) =>
+//   execa(bin, args, { stdio: 'inherit', ...opts });
