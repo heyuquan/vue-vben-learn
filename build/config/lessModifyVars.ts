@@ -2,7 +2,8 @@
  * less global variable
  */
 const primaryColor = '#018ffb';
-
+// const primaryColor = '#0065cc';
+//{
 const modifyVars = {
   'primary-color': primaryColor, //  Global dominant color
   'info-color': primaryColor, //  Default color
@@ -23,5 +24,6 @@ const modifyVars = {
   'border-color-split': '#F0F0F0', //  Border color,
   'border-radius-base': '2px', //  Component/float fillet
 };
+//}
 
 export { modifyVars, primaryColor };
