@@ -153,5 +153,134 @@ export default defineComponent({
     function handleLockPage() {
       openModal(true);
     }
+
+    function renderHeaderContent() {
+      const width = unref(logoWidthRef);
+      return (
+        <div class="layout-header__content ">
+          {unref(getShowHeaderLogo) && (
+            <AppLogo class={`layout-header__logo`} ref={logoRef} theme={unref(getHeaderTheme)} />
+          )}
+
+          {unref(getShowContent) && (
+            <div class="layout-header__left">
+              {unref(getShowHeaderTrigger) && (
+                <LayoutTrigger theme={unref(getHeaderTheme)} sider={false} />
+              )}
+              {unref(getShowBread) && unref(isPc) && (
+                <LayoutBreadcrumb showIcon={unref(getShowBreadCrumbIcon)} />
+              )}
+            </div>
+          )}
+
+          {unref(getShowTopMenu) && unref(isPc) && (
+            <div class={[`layout-header__menu `]} style={{ width: `calc(100% - ${width}px)` }}>
+              {/* <div class={[`layout-header__menu `]}> */}
+              <LayoutMenu
+                isHorizontal={true}
+                // class={`justify-${unref(getTopMenuAlign)}`}
+                theme={unref(getHeaderTheme)}
+                splitType={unref(getSplitType)}
+                menuMode={unref(getMenuMode)}
+              />
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function renderActionDefault(Comp: Component | any, event: Fn) {
+      return (
+        <div class="layout-header__action-item" onClick={event}>
+          <Comp class="layout-header__action-icon" />
+        </div>
+      );
+    }
+
+    function renderAction() {
+      return (
+        <div class={`layout-header__action`}>
+          {unref(getUseErrorHandle) && unref(isPc) && (
+            <TooltipItem title={t('layout.header.tooltipErrorLog')}>
+              {() => (
+                <Badge
+                  count={errorStore.getErrorListCountState}
+                  offset={[0, 10]}
+                  dot
+                  overflowCount={99}
+                >
+                  {() => renderActionDefault(BugOutlined, handleToErrorList)}
+                </Badge>
+              )}
+            </TooltipItem>
+          )}
+
+          {unref(getUseLockPage) && unref(isPc) && (
+            <TooltipItem title={t('layout.header.tooltipLock')}>
+              {() => renderActionDefault(LockOutlined, handleLockPage)}
+            </TooltipItem>
+          )}
+
+          {unref(getShowNotice) && unref(isPc) && (
+            <TooltipItem title={t('layout.header.tooltipNotify')}>
+              {() => <NoticeAction />}
+            </TooltipItem>
+          )}
+
+          {unref(getShowRedo) && unref(isPc) && (
+            <TooltipItem title={t('layout.header.tooltipRedo')}>
+              {() => renderActionDefault(RedoOutlined, refreshPage)}
+            </TooltipItem>
+          )}
+
+          {unref(getShowFullScreen) && unref(isPc) && (
+            <TooltipItem
+              title={
+                unref(isFullscreenRef)
+                  ? t('layout.header.tooltipExitFull')
+                  : t('layout.header.tooltipEntryFull')
+              }
+            >
+              {() => {
+                const Icon = !unref(isFullscreenRef) ? (
+                  <FullscreenOutlined />
+                ) : (
+                  <FullscreenExitOutlined />
+                );
+                return renderActionDefault(Icon, toggleFullscreen);
+              }}
+            </TooltipItem>
+          )}
+          <UserDropdown class="layout-header__user-dropdown" />
+          {unref(getShowLocale) && (
+            <AppLocalePicker
+              reload={true}
+              showText={false}
+              class="layout-header__action-item locale"
+            />
+          )}
+        </div>
+      );
+    }
+
+    function renderHeaderDefault() {
+      return (
+        <>
+          {renderHeaderContent()}
+          {renderAction()}
+          <LockAction onRegister={register} />
+        </>
+      );
+    }
+
+    return () => {
+      return (
+        <Layout.Header
+          class={['layout-header', 'flex p-0 px-4 ', unref(headerClass), { fixed: props.fixed }]}
+        >
+          {() => renderHeaderDefault()}
+        </Layout.Header>
+      );
+    };
   },
 });
