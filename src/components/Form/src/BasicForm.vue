@@ -190,7 +190,9 @@ export default defineComponent({
     watch(
       () => unref(getMergePropsRef).model,
       () => {
-        if (!unref(getMergePropsRef).model) { return; }
+        if (!unref(getMergePropsRef).model) {
+          return;
+        }
         setFieldsValue(unref(getMergePropsRef).model);
       },
       {

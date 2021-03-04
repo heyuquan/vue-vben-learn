@@ -259,7 +259,7 @@ export default defineComponent({
     }
 
     function renderLabelHelpMessage() {
-      const { label, helpMessage, helpComponentProps, subLab el } = props.schema;
+      const { label, helpMessage, helpComponentProps, subLabel } = props.schema;
       const renderLabel = subLabel ? (
         <span>
           {label} <span style="color:#00000073">{subLabel}</span>

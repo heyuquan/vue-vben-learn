@@ -3,9 +3,6 @@ import { useI18n } from '/@/hooks/web/useI18n';
 
 const { t } = useI18n();
 
-/**
- * @description: 生成placeholder
- */
 export function createPlaceholderMessage(component: ComponentType) {
   if (component.includes('Input') || component.includes('Complete')) {
     return t('component.form.input');
